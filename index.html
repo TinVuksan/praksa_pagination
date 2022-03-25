@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Praksa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-8" id="title">
+                <h1>Basic pagination with search/filter functionality</h1>
+            </div>
+            <div class="col-4" id="search">
+                <label id="searchLabel" for="searchBar">Search posts</label>
+                <input type="search" id="searchBar" class="form-control" placeholder="Search" aria-label="search"
+                    data-search>
+            </div>
+        </div>
+        <div class="posts" data-post-container></div>
+        <template data-post-template>
+            <div class="post">
+                <h3 class="post_naslov" data-naslov></h3>
+                <p class="post_tekst" data-tekst></p>
+                <i class="post_info" data-info></i>
+            </div>
+        </template>
+
+        <button id="loadMore_btn" type="button" class="btn btn-outline-dark" onclick="loadMore()">Load posts!</button>
+
+    </div>
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+        </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
