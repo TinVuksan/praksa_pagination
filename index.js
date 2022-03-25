@@ -37,15 +37,15 @@ $(document).ready(function () {
   $("#search").hide();
 });
 
-const postCardTemplate = document.querySelector("[data-post-template]");
-const postCardContainer = document.querySelector("[data-post-container]");
+const postTemplate = document.querySelector("[data-post-template]");
+const postContainer = document.querySelector("[data-post-container]");
 const searchInput = document.querySelector("[data-search]");
 
-let trenutniPostovi = [];
+let loadedPosts = [];
 
 searchInput.addEventListener("input", (e) => {
   const value = e.target.value.toLowerCase();
-  trenutniPostovi.forEach(post => {
+  loadedPosts.forEach(post => {
     const isVisible = post.title.toLowerCase().includes(value) || post.body.toLowerCase().includes(value)
     if(!isVisible) {
       post.element.style.display = "none";
@@ -77,19 +77,19 @@ async function loadMore() {
 
   for (var i = 0; i < maxResult; i++) {
     
-    const post = postCardTemplate.content.cloneNode(true).children[0];
-    const title = post.querySelector("[data-naslov]");
-    const body = post.querySelector("[data-tekst]");
+    const post = postTemplate.content.cloneNode(true).children[0];
+    const title = post.querySelector("[data-title]");
+    const body = post.querySelector("[data-body]");
     const info = post.querySelector("[data-info]");
-    title.textContent = posts[i + currentIndex].title;
+    title.textContent = posts[i + currentIndex].title;''
     body.textContent = posts[i + currentIndex].body;
-    info.textContent = `Post broj: ` + posts[i + currentIndex].id + ` Post napravio: Korisnik ` + posts[i + currentIndex].userId;
+    info.textContent = `Post no. ` + posts[i + currentIndex].id + ` Posted by: User ` + posts[i + currentIndex].userId;
     var obj = {};
     obj["title"] = posts[i + currentIndex].title;
     obj["body"] = posts[i + currentIndex].body;
     obj["element"] = post;
-    trenutniPostovi.push(obj);
-    postCardContainer.append(post);
+    loadedPosts.push(obj);
+    postContainer.append(post);
 
   }
  
