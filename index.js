@@ -78,6 +78,7 @@ function checkPage() {
     if(page <= 0 || containsLetters || containsSpecial || !page) {
       queryParams.delete('page');
       window.location.search = queryParams.toString();
+      alert("Invalid input! Check if \"page\" parameter is a number!")
       return 1;
     }
     else {
@@ -86,6 +87,7 @@ function checkPage() {
       queryParams.set("page", page);
       window.location.search = queryParams.toString();
     }
+
     return parseInt(queryParams.get("page"));
     }
   }
@@ -115,7 +117,7 @@ searchInput.addEventListener("input", (e) => {
 
 let currentIndex = 0;
 async function loadMore() {
-  
+
   const posts = await getData();
   let pageParam = checkPage();
   var maxResult = 6 * pageParam;
