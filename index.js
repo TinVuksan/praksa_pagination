@@ -35,9 +35,7 @@ https://example.com/?page=3&search=code - show only posts (from the first 18 pos
 // Write Javascript code!
 
 $(document).ready(function () {
-  $("#search").hide();
   loadMore();
-  //checkSearch();
 });
 
 const api_URL = "https://jsonplaceholder.typicode.com/posts";
@@ -46,6 +44,7 @@ const postContainer = document.querySelector("[data-post-container]");
 const searchInput = document.querySelector("[data-search]");
 let queryParams = new URLSearchParams(window.location.search);
 let loadedPosts = [];
+
 async function getData() {
   const response = await fetch(api_URL);
   const data = await response.json();
@@ -57,8 +56,7 @@ function checkSearch() {
   if(queryParams.get("search") != null) {
      let value = queryParams.get("search").toLowerCase();
     if(value.includes('"')) {
-      value.replace('d', 's'); //DOVRŠI OVO
-      console.log(value);
+      value = value.replaceAll('"', "");
     }
     return {
       val: value,
@@ -75,12 +73,19 @@ function checkSearch() {
 function checkPage() {
   if(queryParams.has("page")) {
     let page = queryParams.get("page");
-    if(page <=0) {
-      console.log("Uslo");
+    let containsLetters = /[a-z]/i.test(page);
+    let containsSpecial = /[!-\/:-@[-`{-~]/.test(page);
+    if(page <= 0 || containsLetters || containsSpecial || !page) {
       queryParams.delete('page');
+      window.location.search = queryParams.toString();
       return 1;
     }
     else {
+    if(page > Math.round(100/6)) {
+      page = Math.round(100/6);
+      queryParams.set("page", page);
+      window.location.search = queryParams.toString();
+    }
     return parseInt(queryParams.get("page"));
     }
   }
@@ -105,23 +110,16 @@ function Search(value) {
 
 searchInput.addEventListener("input", (e) => {
     let value = e.target.value.toLowerCase();
-    console.log(loadedPosts.length);
     Search(value);
 })
 
 let currentIndex = 0;
-
 async function loadMore() {
-
-  let pageParam = checkPage();
   
-  
-  $("#search").show();
-  $("#loadMore_btn").html("Load more!");
-
   const posts = await getData();
+  let pageParam = checkPage();
   var maxResult = 6 * pageParam;
-
+  // console.log("page param prvo: " + pageParam);
   for (var i = 0; i < maxResult; i++) {
     
     const post = postTemplate.content.cloneNode(true).children[0];
@@ -144,8 +142,10 @@ async function loadMore() {
   if(searchParam.bool) {
     Search(searchParam.val);
   }
-  queryParams.set("page", `${pageParam}`);
- // window.location.search = queryParams.toString(); --- ak ovaj komentar maknem, paginacija radi, međutim iz nekog razloga se cijela stranica cijelo vrijeme refresha (mozda jer je async)
+  //queryParams.set("page", `${pageParam}`);
+  //window.location.search = queryParams.toString(); //--- ak ovaj komentar maknem, paginacija radi, međutim iz nekog razloga se cijela stranica cijelo vrijeme refresha (mozda jer je async)
+  // pageParam+=1;
+  // console.log("page param drugo: " + pageParam);
   currentIndex += maxResult;
 }
 
