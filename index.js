@@ -33,20 +33,66 @@ https://example.com/?page=3&search=code - show only posts (from the first 18 pos
 */
 
 // Write Javascript code!
+
 $(document).ready(function () {
   $("#search").hide();
+  loadMore();
+  //checkSearch();
 });
 
+const api_URL = "https://jsonplaceholder.typicode.com/posts";
 const postTemplate = document.querySelector("[data-post-template]");
 const postContainer = document.querySelector("[data-post-container]");
 const searchInput = document.querySelector("[data-search]");
-
+let queryParams = new URLSearchParams(window.location.search);
 let loadedPosts = [];
+async function getData() {
+  const response = await fetch(api_URL);
+  const data = await response.json();
+  
+  return data;
+}
 
-searchInput.addEventListener("input", (e) => {
-  const value = e.target.value.toLowerCase();
+function checkSearch() {
+  if(queryParams.get("search") != null) {
+     let value = queryParams.get("search").toLowerCase();
+    if(value.includes('"')) {
+      value.replace('d', 's'); //DOVRŠI OVO
+      console.log(value);
+    }
+    return {
+      val: value,
+      bool: true,
+    };
+  }
+  else {
+    return {
+      bool:false,
+    };
+  }
+}
+
+function checkPage() {
+  if(queryParams.has("page")) {
+    let page = queryParams.get("page");
+    if(page <=0) {
+      console.log("Uslo");
+      queryParams.delete('page');
+      return 1;
+    }
+    else {
+    return parseInt(queryParams.get("page"));
+    }
+  }
+  else {
+    return 1;
+  }
+}
+
+function Search(value) {
   loadedPosts.forEach(post => {
-    const isVisible = post.title.toLowerCase().includes(value) || post.body.toLowerCase().includes(value)
+    
+    let isVisible = post.title.toLowerCase().includes(value) || post.body.toLowerCase().includes(value)
     if(!isVisible) {
       post.element.style.display = "none";
     }
@@ -55,25 +101,26 @@ searchInput.addEventListener("input", (e) => {
     }
     
   })
-
-})
-
-const api_URL = "https://jsonplaceholder.typicode.com/posts";
-async function getData() {
-  const response = await fetch(api_URL);
-  const data = await response.json();
-  
-  return data;
 }
 
-var currentIndex = 0;
-var pageIndex = 1;
+searchInput.addEventListener("input", (e) => {
+    let value = e.target.value.toLowerCase();
+    console.log(loadedPosts.length);
+    Search(value);
+})
+
+let currentIndex = 0;
+
 async function loadMore() {
+
+  let pageParam = checkPage();
+  
+  
   $("#search").show();
   $("#loadMore_btn").html("Load more!");
 
   const posts = await getData();
-  var maxResult = 6;
+  var maxResult = 6 * pageParam;
 
   for (var i = 0; i < maxResult; i++) {
     
@@ -92,12 +139,13 @@ async function loadMore() {
     postContainer.append(post);
 
   }
- 
-  var queryParams = new URLSearchParams(window.location.search);
-  queryParams.set("page", `${pageIndex}`);
-  history.replaceState(null, null, "?" + queryParams.toString());
-  pageIndex++;
 
+  let searchParam = checkSearch();
+  if(searchParam.bool) {
+    Search(searchParam.val);
+  }
+  queryParams.set("page", `${pageParam}`);
+ // window.location.search = queryParams.toString(); --- ak ovaj komentar maknem, paginacija radi, međutim iz nekog razloga se cijela stranica cijelo vrijeme refresha (mozda jer je async)
   currentIndex += maxResult;
 }
 
